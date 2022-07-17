@@ -5,6 +5,7 @@ import Loader from './components/Loader/Loader';
 import { ToastContainer } from 'react-toastify';
 import Button from './components/Button';
 import Modal from './components/Modal/Modal';
+import ImageAPI from './services/image-api';
 
 export default class App extends Component {
   state = {
@@ -24,25 +25,14 @@ export default class App extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (prevState.searchImage !== this.state.searchImage ||
       prevState.page !== this.state.page) {
-      fetch(`https://pixabay.com/api/?q=${this.state.searchImage}&page=${this.state.page}&key=21790462-d81f7d941fc30814a1e9b910b&image_type=photo&orientation=horizontal&per_page=12`)
-        .then(res => {
-          if (res.ok) {
-            return res.json();
-          }
-          return Promise.reject(
-            new Error(`Word ${this.state.searchImage} is not exist`),
-          );
-        })
+      this.setState({ loading: true });
+      ImageAPI
+        .fetchImages(this.state.searchImage, this.state.page)
         .then(image => this.setState(prevState => ({ image: [ ...prevState.image, ...image.hits ] })))
         .catch(error => this.setState({ error }))
         .finally(() => this.setState({ loading: false }));
     }
   }
-  // componentDidMount() {
-  //   this.setState({ loading: true });
-  //   fetch(`https://pixabay.com/api/?q=${this.state.searchImage}&page=1&key=21790462-d81f7d941fc30814a1e9b910b&image_type=photo&orientation=horizontal&per_page=12`)
-  //     .then(res => res.json()).then(image => this.setState({ image })).finally(() => this.setState({ loading: false }));
-  // }
 
   onLoadMore = () => {
     this.setState(prevState => ({
@@ -58,7 +48,7 @@ export default class App extends Component {
     this.setState({ showModal: false });
   };
   render() {
-    const { loading, image, page, showModal, largeImage, error, searchImage } = this.state;
+    const { loading, image, page, showModal, largeImage, error } = this.state;
 
     return (
       <div className='app'>
