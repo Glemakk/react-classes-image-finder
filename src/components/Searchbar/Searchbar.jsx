@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState } from 'react';
 import { FcSearch } from 'react-icons/fc';
 import {
     StyledSearchbar,
@@ -9,62 +9,98 @@ import {
 } from './Searchbar.styled';
 import { toast } from 'react-toastify';
 
-class Searchbar extends Component {
-    state = {
-        searchWord: '',
-        isDisabled: true,
-    };
+const Searchbar = ({ onSubmit }) => {
+    const [ searchWord, setSearchWord ] = useState('');
+    // const [ isDisabled, setIsDisabled ] = useState(true);
 
-    handleChangeName = (e) => {
+    // const [ email, setEmail ] = useState(() => {
+    //     return JSON.parse(window.localStorage.getItem('email')) ?? '';
+    // });
+
+    // useEffect(() => {
+    //     window.localStorage.setItem('email', JSON.stringify(email));
+    // }, [ email ]);
+
+    // const handleChangeEmail = e => {
+    //     const value = e.target.value;
+    //     setEmail(value);
+    // };
+
+
+    const handleChange = e => {
         const value = e.target.value;
 
-        this.setState({
-            searchWord: value.toLowerCase(),
-        });
+        setSearchWord(value.toLowerCase());
     };
 
-    handleSubmit = (e) => {
+
+    // const handleChange = e => {
+    //     const { name, value } = e.target;
+
+    //     switch (name) {
+    //         case 'email':
+    //             setEmail(value);
+    //             break;
+
+    //         case 'password':
+    //             setPassword(value);
+    //             break;
+
+    //         default:
+    //             return;
+    //     }
+    // };
+
+    const handleSubmit = (e) => {
         e.preventDefault();
-        const { onSubmit } = this.props;
-        const { searchWord } = this.state;
         if (searchWord.trim() === '') {
+            // setIsDisabled(true);
             toast.warning('Tap some word for searching!');
-            // alert('Tap text for searching');
             return;
         }
-        // this.setState({ isDisabled: false });
-        // console.log('isDisabled', this.state.isDisabled);
+
+        // setIsDisabled(false);
         onSubmit(searchWord);
-        this.clearForm();
+        clearForm();
     };
 
-    clearForm = () => {
-        this.setState({ searchWord: '' });
+    const clearForm = () => {
+        // setIsDisabled(true);
+        setSearchWord('');
     };
 
-    render() {
-        console.log('this.state.isDisabled', this.state.isDisabled);
-        return (
-            <StyledSearchbar>
-                <SearchForm onSubmit={this.handleSubmit} >
-                    <SearchButton type="submit">
-                        <FcSearch />
-                        <SearchFormButtonLabel>Search</SearchFormButtonLabel>
-                    </SearchButton>
-
-                    <SearchInput
+    return (
+        <StyledSearchbar>
+            <SearchForm onSubmit={handleSubmit} >
+                <SearchButton type="submit">
+                    <FcSearch />
+                    <SearchFormButtonLabel>Search</SearchFormButtonLabel>
+                </SearchButton>
+                <SearchInput
+                    type="text"
+                    autocomplete="off"
+                    autoFocus
+                    name='searchWord'
+                    value={searchWord}
+                    onChange={handleChange}
+                    placeholder="Search images and photos"
+                />
+                {/* <form onSubmit={handleSubmit} >
+                    <button type='submit'></button>
+                    <input
                         type="text"
                         autocomplete="off"
                         autoFocus
-                        name='searchWord'
-                        value={this.state.searchWord}
-                        onChange={this.handleChangeName}
-                        placeholder="Search images and photos"
+                        name='email'
+                        value={email}
+                        onChange={handleChangeEmail}
+                        placeholder="email"
                     />
-                </SearchForm>
-            </StyledSearchbar>
-        );
-    }
-}
+                </form> */}
+
+            </SearchForm>
+        </StyledSearchbar>
+    );
+};
 
 export default Searchbar;
